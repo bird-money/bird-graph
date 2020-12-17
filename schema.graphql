@@ -1,0 +1,413 @@
+"""
+The BirdCore type has protocol level variables stored
+"""
+type BirdCore @entity {
+    "ID is set to 1"
+    id: ID!
+    "Address of price oracle the birdCore uses"
+    priceOracle: Bytes
+    "Factor used to determine repayAmount for liquidating"
+    closeFactor: BigInt
+    "The percent bonus liquidators get for liquidating"
+    liquidationIncentive: BigInt
+    "Max assets a single user can enter"
+    maxAssets: BigInt
+    "Bird+ Price"
+    birdPlusRate: BigDecimal
+}
+
+"""
+The Market Tokens Name
+"""
+type MarketToken @entity {
+    "ID is set to 1"
+    id: ID!
+    "Address of market"
+    address: Bytes
+}
+
+"""
+The Market Underlying Tokens
+"""
+type MarketUnderlyingToken @entity {
+    "ID is set to 1"
+    id: ID!
+    "Address of market"
+    marketAddress: Bytes
+    "BToken symbol"
+    symbol: String
+}
+
+"""
+Market stores all high level variables for a bToken market
+"""
+type Market @entity { 
+    #Fields that match birdCore API
+    "Yearly borrow rate. With 2102400 blocks per year"
+    borrowRate: BigDecimal!
+    "The bToken contract balance of ERC20 or ETH"
+    cash: BigDecimal!
+    "Collateral factor determining how much one can borrow"
+    collateralFactor: BigDecimal!
+    "Exchange rate of tokens / bTokens"
+    exchangeRate:  BigDecimal!
+    "Address of the interest rate model"
+    interestRateModelAddress: Bytes!
+    "Name of the bToken"
+    name: String!
+    "Number of borrowers active in the market"
+    numberOfBorrowers: Int!
+    "Number of suppliers active in the market"
+    numberOfSuppliers: Int!
+    "Reserves stored in the contract"
+    reserves: BigDecimal!
+    "Yearly supply rate. With 2104400 blocks per year"
+    supplyRate: BigDecimal!
+    "BToken symbol"
+    symbol: String!
+    "BToken address"
+    id: ID!
+    "Borrows in the market"
+    totalBorrows: BigDecimal!
+    "BToken supply. BTokens have 8 decimals"
+    totalSupply: BigDecimal!
+    "Underlying token address"
+    underlyingAddress: Bytes!
+    "Underlying token name"
+    underlyingName: String!
+    "Underlying price of token in ETH (ex. 0.007 DAI)"
+    underlyingPrice: BigDecimal!
+    "Underlying token symbol"
+    underlyingSymbol: String!
+
+    # BirdPlus related fileds in market 
+    birdPlusSpeed: BigDecimal!
+
+    # Fields that are not in birdCore api
+    "Block the market is updated to"
+    accrualBlockNumber: Int!
+    "Timestamp the market was most recently updated"
+    blockTimestamp: Int!
+    "The history of the markets borrow index return (Think S&P 500)"
+    borrowIndex: BigDecimal!
+    "The factor determining interest that goes to reserves"
+    reserveFactor: BigInt!
+    "Underlying token price in USD"
+    underlyingPriceUSD: BigDecimal!
+    "Underlying token decimal length"
+    underlyingDecimals: Int!
+}
+
+"""
+Account is an ETH address, with a list of all bToken markets the account has participated in, along with liquidation information.
+"""
+type Account @entity {
+    "User ETH address"
+    id: ID!
+    "Array of BTokens user is in"
+    tokens: [AccountBToken!]! @derivedFrom(field: "account")
+    "Count user has been liquidated"
+    countLiquidated: Int!
+    "Count user has liquidated others"
+    countLiquidator: Int!
+    "True if user has ever borrowed"
+    hasBorrowed: Boolean!
+    # "BirdPlus balance of the user"
+    # birdPlusBalance: BigDecimal!
+
+    # The following values are added by the JS Wrapper, and must be calculated with the most up
+    # to date values based on the block delta for market.exchangeRate and market.borrowIndex
+    # They do not need to be in the schema, but they will show up in the explorer playground
+
+    # "If less than 1, the account can be liquidated
+    # health: BigDecimal!
+    # "Total assets supplied by user"
+    # totalBorrowValueInEth: BigDecimal!
+    # "Total assets borrowed from user"
+    # totalCollateralValueInEth: BigDecimal!
+}
+
+"""
+AccountBToken is a single account within a single bToken market, with data such as interest earned or paid
+"""
+type AccountBToken @entity {
+    "Concatenation of BToken address and user address"
+    id: ID!
+    "Relation to market"
+    market: Market!
+    "Symbol of the bToken"
+    symbol: String!
+    "Relation to user"
+    account: Account!
+    "Hashes of all user transactions"
+    transactionHashes: [Bytes!]!
+    "Times of all user transactions"
+    transactionTimes: [Int!]!
+    "Block number this asset was updated at in the contract"
+    accrualBlockNumber: Int!
+    "True if user is entered, false if they are exited"
+    enteredMarket: Boolean!
+
+    "BToken balance of the user"
+    bTokenBalance: BigDecimal!
+    "Total amount of underlying supplied"
+    totalUnderlyingSupplied: BigDecimal!
+    "Total amount of underling redeemed"
+    totalUnderlyingRedeemed: BigDecimal!
+    "Is underlying contract approved"
+    isUnderlyingApproved: Boolean!
+    "The value of the borrow index upon users last interaction"
+    accountBorrowIndex: BigDecimal!
+    "Total amount underlying borrowed, exclusive of interest"
+    totalUnderlyingBorrowed: BigDecimal!
+    "Total amount underlying repaid"
+    totalUnderlyingRepaid: BigDecimal!
+    "Current borrow balance stored in contract (exclusive of interest since accrualBlockNumber)"
+    storedBorrowBalance: BigDecimal!
+
+    # The following values are added by the JS Wrapper, and must be calculated with the most up
+    # to date values based on the block delta for market.exchangeRate and market.borrowIndex
+    # They do not need to be in the schema, but they will show up in the explorer playground
+
+    # supplyBalanceUnderlying: BigDecimal!
+    # FORMULA: supplyBalanceUnderlying = bTokenBalance * market.exchangeRate
+
+    # lifetimeSupplyInterestAccrued: BigDecimal!
+    # FORMULA: lifetimeSupplyInterestAccrued = supplyBalanceUnderlying - totalUnderlyingSupplied + totalUnderlyingRedeemed
+
+    # borrowBalanceUnderlying: BigDecimal!
+    # FORMULA: borrowBalanceUnderlying = storedBorrowBalance * market.borrowIndex / accountBorrowIndex
+
+    # lifetimeBorrowInterestAccrued: BigDecimal!
+    # FORMULA: lifetimeBorrowInterestAccrued = borrowBalanceUnderlying - totalUnderlyingBorrowed + totalUnderlyingRepaid
+}
+
+"""
+An interface for a transfer of any bToken. TransferEvent, MintEvent, RedeemEvent, and LiquidationEvent all use this interface
+"""
+interface BTokenTransfer {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "bTokens transferred"
+    amount: BigDecimal!
+    "Account that received tokens"
+    to: Bytes!
+    "Account that sent tokens"
+    from: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "Symbol of the bToken transferred"
+    bTokenSymbol: String!
+}
+
+"""
+TransferEvent will be stored for every mint, redeem, liquidation, and any normal transfer between two accounts.
+"""
+type TransferEvent implements BTokenTransfer @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "bTokens transferred"
+    amount: BigDecimal!
+    "Account that received tokens"
+    to: Bytes!
+    "Account that sent tokens"
+    from: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "Symbol of the bToken transferred"
+    bTokenSymbol: String!
+}
+
+"""
+MintTokenEvent stores information for mints. From address will always be a bToken market address
+"""
+type MintTokenEvent implements BTokenTransfer @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "bTokens transferred"
+    amount: BigDecimal!
+    "Account that received tokens (minter)"
+    to: Bytes!
+    "Account that sent tokens (BToken contract)"
+    from: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "Symbol of the bToken transferred"
+    bTokenSymbol: String!
+    "Underlying token amount transferred"
+    underlyingAmount: BigDecimal
+}
+
+"""
+RedeemTokenEvent stores information for redeems. To address will always be a bToken market address
+"""
+type RedeemTokenEvent implements BTokenTransfer @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "bTokens transferred"
+    amount: BigDecimal!
+    "Account that received tokens (BToken contract)"
+    to: Bytes!
+    "Account that sent tokens (redeemer)"
+    from: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "Symbol of the bToken transferred"
+    bTokenSymbol: String!
+    "Underlying token amount transferred"
+    underlyingAmount: BigDecimal
+}
+
+"""
+LiquidationTokenEvent stores information for liquidations. The event is emitted from the bToken market address.
+"""
+type LiquidationTokenEvent implements BTokenTransfer @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "bTokens seized"
+    amount: BigDecimal!
+    "Liquidator receiving tokens"
+    to: Bytes!
+    "Account being liquidated (borrower)"
+    from: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "bToken that was sezied as collateral"
+    bTokenSymbol: String!
+    "Symbol of the underlying asset repaid through liquidation"
+    underlyingSymbol: String!
+    "Underlying bToken amount that was repaid by liquidator"
+    underlyingRepayAmount: BigDecimal!
+}
+
+"""
+Underlying transfers are transfers of underlying collateral for both borrows and repays
+"""
+interface UnderlyingTransfer {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "Amount of underlying borrowed"
+    amount: BigDecimal!
+    "Total borrows of this asset the account has"
+    accountBorrows: BigDecimal!
+    "Account that borrowed the tokens"
+    borrower: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "Symbol of the borrowed underlying asset"
+    underlyingSymbol: String!
+}
+
+"""
+BorrowTokenEvent stores information for borrows
+"""
+type BorrowTokenEvent implements UnderlyingTransfer @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "Amount of underlying borrowed"
+    amount: BigDecimal!
+    "Total borrows of this asset the account has"
+    accountBorrows: BigDecimal!
+    "Account that borrowed the tokens"
+    borrower: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "Symbol of the borrowed underlying asset"
+    underlyingSymbol: String!
+}
+
+"""
+RepayTokenEvent stores information for repays. Payer is not always the same as borrower, such as in the event of a Liquidation
+"""
+type RepayTokenEvent implements UnderlyingTransfer @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "Amount of underlying repaid"
+    amount: BigDecimal!
+    "Total borrows of this asset the account has"
+    accountBorrows: BigDecimal!
+    "Account that borrowed the tokens"
+    borrower: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "Symbol of the borrowed underlying asset"
+    underlyingSymbol: String!
+    "Payer of the borrow funds"
+    payer: Bytes!
+}
+
+"""
+ApprovalEvent will be stored for approval on the underlying token to mint.
+"""
+type ApprovalEvent @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "approval amount"
+    amount: BigDecimal!
+    "Spender market"
+    spender: Bytes!
+    "Account that approves"
+    owner: Bytes!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+    "Symbol of the bToken approved"
+    bTokenSymbol: String!
+}
+
+"""
+DistributedSupplierBirdPlusEvent stores information for suppliers
+"""
+type DistributedSupplierBirdPlusEvent @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "Amount of birdPlus distributed"
+    birdPlusAmount: BigDecimal!
+    "BirdPlus supply index"
+    birdPlusSupplyIndex: BigDecimal!
+    "Account that supplied the tokens"
+    supplier: Bytes!
+    "Symbol of the bToken supplied"
+    bTokenSymbol: String!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+}
+
+"""
+DistributedBorrowerBirdPlusEvent stores information for suppliers
+"""
+type DistributedBorrowerBirdPlusEvent @entity {
+    "Transaction hash concatenated with log index"
+    id: ID!
+    "Amount of birdPlus distributed"
+    birdPlusAmount: BigDecimal!
+    "BirdPlus borrow index"
+    birdPlusBorrowIndex: BigDecimal!
+    "Account that borrowed the tokens"
+    borrower: Bytes!
+    "Symbol of the bToken borrowed"
+    bTokenSymbol: String!
+    "Block number"
+    blockNumber: Int!
+    "Block time"
+    blockTime: Int!
+}
