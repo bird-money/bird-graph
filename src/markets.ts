@@ -15,8 +15,8 @@ import {
   zeroBD,
 } from './helpers'
 
-let bUSDCAddress = '0x6e6ef011f1a3b587f472167b5b60253792c241d2'
-let bETHAddress = '0x49ee64c87d18af8002ce6421f6cbb02b02567fe2'
+let bUSDCAddress = '0xeeba52cbc658a53defea57620c9e656eaef669b4'
+let bETHAddress = '0x5c3ab184e4f009836c79ab874899773a36de91cd'
 
 // Used for all cERC20 contracts
 function getTokenPrice(
@@ -29,11 +29,11 @@ function getTokenPrice(
   let oracleAddress = comptroller.priceOracle as Address
   let underlyingPrice: BigDecimal
 
-    let oracle1 = PriceOracle.bind(oracleAddress)
-    underlyingPrice = oracle1
-      .getUnderlyingPrice(eventAddress)
-      .toBigDecimal()
-      .div(mantissaFactorBD)
+  let oracle1 = PriceOracle.bind(oracleAddress)
+  underlyingPrice = oracle1
+    .getUnderlyingPrice(eventAddress)
+    .toBigDecimal()
+    .div(mantissaFactorBD)
   return underlyingPrice
 }
 
@@ -56,7 +56,7 @@ function getUSDCpriceETH(blockNumber: i32): BigDecimal {
 export function createMarket(marketAddress: string): Market {
   let market: Market
   let contract = BToken.bind(Address.fromString(marketAddress))
-  
+
   if (contract !== null && contract.symbol() !== null && !contract.try_isBToken().reverted) {
     let marketToken = MarketToken.load(contract.symbol())
     if (marketToken == null) {
@@ -87,7 +87,7 @@ export function createMarket(marketAddress: string): Market {
     market.underlyingAddress = contract.underlying()
     let underlyingContract = ERC20.bind(market.underlyingAddress as Address)
     market.underlyingDecimals = underlyingContract.decimals()
-   
+
     market.underlyingName = underlyingContract.name()
     market.underlyingSymbol = underlyingContract.symbol()
 
@@ -116,7 +116,7 @@ export function createMarket(marketAddress: string): Market {
   market.birdPlusSpeed = zeroBD
   market.interestRateModelAddress = interestRateModelAddress.reverted ? Address.fromString(
     '0x0000000000000000000000000000000000000000') : interestRateModelAddress.value,
-  market.name = contract.name()
+    market.name = contract.name()
   market.numberOfBorrowers = 0
   market.numberOfSuppliers = 0
   market.reserves = zeroBD
@@ -141,7 +141,7 @@ export function updateMarket(
 ): Market {
   let marketID = marketAddress.toHexString()
   let market = Market.load(marketID)
-  
+
   if (market == null) {
     log.debug("market is null", []);
     market = createMarket(marketID)
@@ -235,7 +235,7 @@ export function updateMarket(
       .times(BigDecimal.fromString('2102400'))
       .div(mantissaFactorBD)
       .truncate(mantissaFactor)
-    
+
 
     // This fails on only the first call to bZRX. It is unclear why, but otherwise it works.
     // So we handle it like this.
@@ -250,7 +250,7 @@ export function updateMarket(
         .div(mantissaFactorBD)
         .truncate(mantissaFactor)
     }
-    
+
     market.save()
 
   }
