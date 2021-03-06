@@ -8,9 +8,9 @@ dataSources:
     name: BirdCore
     network: kovan
     source:
-      address: '0x0c4d53a160f5bd028b101eb8e69dab84a928f559'
+      address: '0xf9595371E3f339086b98E66062e0cDae7f8820Fa'
       abi: BirdCore
-      startBlock: 23546620
+      startBlock: 23770832
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -53,7 +53,7 @@ dataSources:
     network: kovan
     source:
       abi: BToken
-      startBlock: 23546620
+      startBlock: 23770832
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -94,7 +94,7 @@ dataSources:
     network: kovan
     source:
       abi: ERC20
-      startBlock: 23546620
+      startBlock: 23770832
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -116,9 +116,9 @@ dataSources:
     name: BirdPlus
     network: kovan
     source:
-      address: '0x6830066f65469b584b23715f3551a0ff7f0ef400'
+      address: '0x3aaf80039b06eb9e4B06BFb548DB155aDF4f3Bf8'
       abi: BirdPlus
-      startBlock: 23546620
+      startBlock: 23770832
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
