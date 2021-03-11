@@ -141,7 +141,6 @@ export function handleBorrowToken(event: BorrowToken): void {
     }
     account.hasBorrowed = true
     account.save()
-
     // Update bTokenStats common for all events, and return the stats to update unique
     // values for each event
     let bTokenStats = updateCommonBTokenStats(
@@ -152,23 +151,19 @@ export function handleBorrowToken(event: BorrowToken): void {
       event.block.timestamp.toI32(),
       event.block.number.toI32(),
     )
-
     let borrowAmountBD = event.params.borrowAmount
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
     let previousBorrow = bTokenStats.storedBorrowBalance
-
     bTokenStats.storedBorrowBalance = event.params.accountBorrows
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-
     bTokenStats.accountBorrowIndex = market.borrowIndex
     bTokenStats.totalUnderlyingBorrowed = bTokenStats.totalUnderlyingBorrowed.plus(
       borrowAmountBD,
     )
     bTokenStats.save()
-
     if (
       previousBorrow.equals(zeroBD) &&
       !event.params.accountBorrows.toBigDecimal().equals(zeroBD) // checking edge case for borrwing 0
@@ -176,22 +171,18 @@ export function handleBorrowToken(event: BorrowToken): void {
       market.numberOfBorrowers = market.numberOfBorrowers + 1
       market.save()
     }
-
     let borrowID = event.transaction.hash
       .toHexString()
       .concat('-')
       .concat(event.transactionLogIndex.toString())
-
     let borrowAmount = event.params.borrowAmount
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-
     let accountBorrows = event.params.accountBorrows
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-
     let borrow = new BorrowTokenEvent(borrowID)
     borrow.amount = borrowAmount
     borrow.accountBorrows = accountBorrows
@@ -301,7 +292,6 @@ export function handleRepayBorrowToken(event: RepayBorrowToken): void {
  *    add liquidation counts in this handler.
  */
 export function handleLiquidateBorrowToken(event: LiquidateBorrowToken): void {
-
   let marketRepayToken = Market.load(event.address.toHexString())
   if (marketRepayToken != null) {
     let marketBTokenLiquidated = Market.load(event.params.bTokenCollateral.toHexString())
@@ -385,7 +375,6 @@ export function handleTransfer(event: Transfer): void {
         event.block.timestamp.toI32(),
       )
     }
-
     let amountUnderlying = market.exchangeRate.times(
       event.params.amount.toBigDecimal().div(bTokenDecimalsBD),
     )
@@ -400,7 +389,6 @@ export function handleTransfer(event: Transfer): void {
       if (accountFrom == null) {
         createAccount(accountFromID)
       }
-
       // Update bTokenStats common for all events, and return the stats to update unique
       // values for each event
       let bTokenStatsFrom = updateCommonBTokenStats(
@@ -411,19 +399,16 @@ export function handleTransfer(event: Transfer): void {
         event.block.timestamp.toI32(),
         event.block.number.toI32(),
       )
-
       bTokenStatsFrom.bTokenBalance = bTokenStatsFrom.bTokenBalance.minus(
         event.params.amount
           .toBigDecimal()
           .div(bTokenDecimalsBD)
           .truncate(bTokenDecimals),
       )
-
       bTokenStatsFrom.totalUnderlyingRedeemed = bTokenStatsFrom.totalUnderlyingRedeemed.plus(
         amountUnderylingTruncated,
       )
       bTokenStatsFrom.save()
-
       if (bTokenStatsFrom.bTokenBalance.equals(zeroBD)) {
         market.numberOfSuppliers = market.numberOfSuppliers - 1
         market.save()

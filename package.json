@@ -2,15 +2,15 @@
   "name": "bird-graph",
   "version": "0.1.0",
   "scripts": {
-    "create": "graph create anandsemtech/bird-graph --node https://api.thegraph.com/deploy/",
-    "create-local": "graph create anandsemtech/bird-graph --node http://127.0.0.1:8020",
+    "create": "graph create birdcarer/bird --node https://api.thegraph.com/deploy/",
+    "create-local": "graph create birdcarer/bird --node http://127.0.0.1:8020",
     "codegen": "graph codegen",
     "build": "graph build",
     "auth": "graph auth https://api.thegraph.com/deploy/ <ACCESS_TOKEN>",
     "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
     "prepare:kovan": "mustache config/kovan.json subgraph.template.yaml > subgraph.yaml",
-    "deploy": "graph deploy anandsemtech/bird-graph --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy anandsemtech/bird-graph --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy": "graph deploy birdcarer/bird --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-local": "graph deploy birdcarer/bird --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.18.0",

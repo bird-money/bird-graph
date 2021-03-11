@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: BirdCore
-    network: kovan
+    network: mainnet
     source:
-      address: '0x0c4d53a160f5bd028b101eb8e69dab84a928f559'
+      address: '0x980D11Ac1C26F737CA467BeC2c0ed292d06a258C'
       abi: BirdCore
-      startBlock: 23546620
+      startBlock: 11997531
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -50,10 +50,10 @@ dataSources:
           handler: handleDistributedBorrowerBirdPlus
   - kind: ethereum/contract
     name: BToken
-    network: kovan
+    network: mainnet
     source:
       abi: BToken
-      startBlock: 23546620
+      startBlock: 11997531
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -91,10 +91,10 @@ dataSources:
           handler: handleNewMarketTokenInterestRateModel
   - kind: ethereum/contract
     name: UnderlyingToken
-    network: kovan
+    network: mainnet
     source:
       abi: ERC20
-      startBlock: 23546620
+      startBlock: 11997531
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -114,11 +114,11 @@ dataSources:
           handler: handleApproval
   - kind: ethereum/contract
     name: BirdPlus
-    network: kovan
+    network: mainnet
     source:
-      address: '0x6830066f65469b584b23715f3551a0ff7f0ef400'
+      address: '0xbced0066a6a3b7c633cbd8da0d53b6dcd9e0c352'
       abi: BirdPlus
-      startBlock: 23546620
+      startBlock: 11997531
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
