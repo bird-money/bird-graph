@@ -1,5 +1,6 @@
 {
   "network": "kovan",
   "birdCoreAddress": "0x0c4d53a160f5bd028b101eb8e69dab84a928f559",
-  "birdPlusAddress": "0x6830066f65469b584b23715f3551a0ff7f0ef400"
+  "birdPlusAddress": "0x6830066f65469b584b23715f3551a0ff7f0ef400",
+  "priceOracleAddress": "0x30604D4A92cC0066FCF3497a163941018A9a7e62"
 }

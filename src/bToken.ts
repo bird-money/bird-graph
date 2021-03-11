@@ -12,15 +12,20 @@ import {
   NewTokenReserveFactor,
   NewMarketTokenInterestRateModel,
 } from '../generated/BToken/BToken'
-import { 
-  Market, 
+
+import {
+  PricePosted
+} from '../generated/SimplePriceOracle/SimplePriceOracle'
+
+import {
+  Market,
   Account,
   MintTokenEvent,
   RedeemTokenEvent,
   LiquidationTokenEvent,
   TransferEvent,
   BorrowTokenEvent,
-  RepayTokenEvent  
+  RepayTokenEvent
 } from '../generated/schema'
 
 import { createMarket, updateMarket } from './markets'
@@ -136,7 +141,7 @@ export function handleBorrowToken(event: BorrowToken): void {
     }
     account.hasBorrowed = true
     account.save()
-  
+
     // Update bTokenStats common for all events, and return the stats to update unique
     // values for each event
     let bTokenStats = updateCommonBTokenStats(
@@ -147,23 +152,23 @@ export function handleBorrowToken(event: BorrowToken): void {
       event.block.timestamp.toI32(),
       event.block.number.toI32(),
     )
-  
+
     let borrowAmountBD = event.params.borrowAmount
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
     let previousBorrow = bTokenStats.storedBorrowBalance
-  
+
     bTokenStats.storedBorrowBalance = event.params.accountBorrows
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-  
+
     bTokenStats.accountBorrowIndex = market.borrowIndex
     bTokenStats.totalUnderlyingBorrowed = bTokenStats.totalUnderlyingBorrowed.plus(
       borrowAmountBD,
     )
     bTokenStats.save()
-  
+
     if (
       previousBorrow.equals(zeroBD) &&
       !event.params.accountBorrows.toBigDecimal().equals(zeroBD) // checking edge case for borrwing 0
@@ -171,22 +176,22 @@ export function handleBorrowToken(event: BorrowToken): void {
       market.numberOfBorrowers = market.numberOfBorrowers + 1
       market.save()
     }
-  
+
     let borrowID = event.transaction.hash
       .toHexString()
       .concat('-')
       .concat(event.transactionLogIndex.toString())
-  
+
     let borrowAmount = event.params.borrowAmount
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-  
+
     let accountBorrows = event.params.accountBorrows
       .toBigDecimal()
       .div(exponentToBigDecimal(market.underlyingDecimals))
       .truncate(market.underlyingDecimals)
-  
+
     let borrow = new BorrowTokenEvent(borrowID)
     borrow.amount = borrowAmount
     borrow.accountBorrows = accountBorrows
@@ -296,7 +301,7 @@ export function handleRepayBorrowToken(event: RepayBorrowToken): void {
  *    add liquidation counts in this handler.
  */
 export function handleLiquidateBorrowToken(event: LiquidateBorrowToken): void {
-  
+
   let marketRepayToken = Market.load(event.address.toHexString())
   if (marketRepayToken != null) {
     let marketBTokenLiquidated = Market.load(event.params.bTokenCollateral.toHexString())
@@ -380,22 +385,22 @@ export function handleTransfer(event: Transfer): void {
         event.block.timestamp.toI32(),
       )
     }
-  
+
     let amountUnderlying = market.exchangeRate.times(
       event.params.amount.toBigDecimal().div(bTokenDecimalsBD),
     )
     let amountUnderylingTruncated = amountUnderlying.truncate(market.underlyingDecimals)
-  
+
     // Checking if the tx is FROM the bToken contract (i.e. this will not run when minting)
     // If so, it is a mint, and we don't need to run these calculations
-  
+
     let accountFromID = event.params.from.toHex()
     if (accountFromID != marketID) {
       let accountFrom = Account.load(accountFromID)
       if (accountFrom == null) {
         createAccount(accountFromID)
       }
-  
+
       // Update bTokenStats common for all events, and return the stats to update unique
       // values for each event
       let bTokenStatsFrom = updateCommonBTokenStats(
@@ -406,24 +411,24 @@ export function handleTransfer(event: Transfer): void {
         event.block.timestamp.toI32(),
         event.block.number.toI32(),
       )
-  
+
       bTokenStatsFrom.bTokenBalance = bTokenStatsFrom.bTokenBalance.minus(
         event.params.amount
           .toBigDecimal()
           .div(bTokenDecimalsBD)
           .truncate(bTokenDecimals),
       )
-  
+
       bTokenStatsFrom.totalUnderlyingRedeemed = bTokenStatsFrom.totalUnderlyingRedeemed.plus(
         amountUnderylingTruncated,
       )
       bTokenStatsFrom.save()
-  
+
       if (bTokenStatsFrom.bTokenBalance.equals(zeroBD)) {
         market.numberOfSuppliers = market.numberOfSuppliers - 1
         market.save()
       }
-    } 
+    }
 
     // Checking if the tx is TO the bToken contract (i.e. this will not run when redeeming)
     // If so, we ignore it. this leaves an edge case, where someone who accidentally sends
@@ -469,9 +474,9 @@ export function handleTransfer(event: Transfer): void {
       }
     }
     let transferID = event.transaction.hash
-    .toHexString()
-    .concat('-')
-    .concat(event.transactionLogIndex.toString())
+      .toHexString()
+      .concat('-')
+      .concat(event.transactionLogIndex.toString())
 
     let transfer = new TransferEvent(transferID)
     transfer.amount = event.params.amount.toBigDecimal().div(bTokenDecimalsBD)
@@ -517,5 +522,13 @@ export function handleNewMarketTokenInterestRateModel(
   if (market !== null) {
     market.interestRateModelAddress = event.params.newInterestRateModel
     market.save()
+  }
+}
+
+export function handlePricePosted(event: PricePosted): void {
+  let marketID = event.params.asset.toHex()
+  let market = Market.load(marketID)
+  if (market !== null) {
+    updateMarket(event.params.asset, event.block.number.toI32(), event.block.timestamp.toI32())
   }
 }

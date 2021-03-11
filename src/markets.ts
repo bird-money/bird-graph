@@ -33,7 +33,7 @@ function getTokenPrice(
   underlyingPrice = oracle1
     .getUnderlyingPrice(eventAddress)
     .toBigDecimal()
-    .div(mantissaFactorBD)
+    .div(exponentToBigDecimal(mantissaFactor - underlyingDecimals + mantissaFactor))
   return underlyingPrice
 }
 
@@ -159,9 +159,17 @@ export function updateMarket(
 
     // if bETH, we only update USD price
     if (market.id == bETHAddress) {
-      market.underlyingPriceUSD = market.underlyingPrice
-        .div(usdPriceInEth)
-        .truncate(market.underlyingDecimals)
+      let tokenPriceEth = getTokenPrice(
+        blockNumber,
+        contractAddress,
+        market.underlyingAddress as Address,
+        market.underlyingDecimals,
+      )
+
+      market.underlyingPrice = tokenPriceEth.truncate(mantissaFactor)
+
+      market.underlyingPriceUSD = market.underlyingPrice;
+
     } else {
       let tokenPriceEth = getTokenPrice(
         blockNumber,
@@ -170,13 +178,14 @@ export function updateMarket(
         market.underlyingDecimals,
       )
 
-      market.underlyingPrice = tokenPriceEth.truncate(market.underlyingDecimals)
+      market.underlyingPrice = tokenPriceEth.truncate(mantissaFactor - market.underlyingDecimals + mantissaFactor)
+      market.underlyingPriceUSD = market.underlyingPrice;
       // if USDC, we only update ETH price
-      if (market.id != bUSDCAddress) {
-        market.underlyingPriceUSD = market.underlyingPrice
-          .div(usdPriceInEth)
-          .truncate(market.underlyingDecimals)
-      }
+      // if (market.id != bUSDCAddress) {
+      //   market.underlyingPriceUSD = market.underlyingPrice
+      //     .div(usdPriceInEth)
+      //     .truncate(market.underlyingDecimals)
+      // }
     }
 
     market.accrualBlockNumber = contract.accrualBlockNumber().toI32()
