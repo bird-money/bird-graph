@@ -134,11 +134,11 @@ dataSources:
           handler: handleBirdPlusTransfer
   - kind: ethereum/contract
     name: SimplePriceOracle
-    network: kovan
+    network: mainnet
     source:
-      address: '0x30604D4A92cC0066FCF3497a163941018A9a7e62'
+      address: '0x624128c9f71Dc9Ca6876F2F75d6e8F64899209D7'
       abi: SimplePriceOracle
-      startBlock: 23862832
+      startBlock: 12030984
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

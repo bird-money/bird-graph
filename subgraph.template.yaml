@@ -138,7 +138,7 @@ dataSources:
     source:
       address: '{{priceOracleAddress}}'
       abi: SimplePriceOracle
-      startBlock: 23862832
+      startBlock: 12030984
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
