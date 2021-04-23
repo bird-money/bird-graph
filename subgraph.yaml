@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: BirdCore
-    network: mainnet
+    network: testnet
     source:
-      address: '0x980D11Ac1C26F737CA467BeC2c0ed292d06a258C'
+      address: '0x7F7696BD1C21f4cbcb7B3d3f7438ED3E242c2C4a'
       abi: BirdCore
-      startBlock: 11997531
+      startBlock: 8226882
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -50,10 +50,10 @@ dataSources:
           handler: handleDistributedBorrowerBirdPlus
   - kind: ethereum/contract
     name: BToken
-    network: mainnet
+    network: testnet
     source:
       abi: BToken
-      startBlock: 11997531
+      startBlock: 8226882
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -91,10 +91,10 @@ dataSources:
           handler: handleNewMarketTokenInterestRateModel
   - kind: ethereum/contract
     name: UnderlyingToken
-    network: mainnet
+    network: testnet
     source:
       abi: ERC20
-      startBlock: 11997531
+      startBlock: 8226882
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -114,11 +114,11 @@ dataSources:
           handler: handleApproval
   - kind: ethereum/contract
     name: BirdPlus
-    network: mainnet
+    network: testnet
     source:
-      address: '0xbced0066a6a3b7c633cbd8da0d53b6dcd9e0c352'
+      address: '0x8966f56ac5c793A227CBf552E3df2642483058a0'
       abi: BirdPlus
-      startBlock: 11997531
+      startBlock: 8226882
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -134,11 +134,11 @@ dataSources:
           handler: handleBirdPlusTransfer
   - kind: ethereum/contract
     name: SimplePriceOracle
-    network: kovan
+    network: testnet
     source:
-      address: '0x30604D4A92cC0066FCF3497a163941018A9a7e62'
+      address: '0x21B5878aff9c2A67d81e7bFC26a6E72B1E848F67'
       abi: SimplePriceOracle
-      startBlock: 23862832
+      startBlock: 8226882
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

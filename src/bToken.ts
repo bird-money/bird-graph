@@ -121,7 +121,7 @@ export function handleRedeemToken(event: RedeemToken): void {
   }
 }
 
-/* Borrow assets from the protocol. All values either ETH or ERC20
+/* Borrow assets from the protocol. All values either BNB or ERC20
  *
  * event.params.totalBorrows = of the whole market (not used right now)
  * event.params.accountBorrows = total of the account

@@ -15,8 +15,8 @@ import {
   zeroBD,
 } from './helpers'
 
-let bUSDCAddress = '0xbadcf640bf54d28b15235dcec5817756f247cced'
-let bETHAddress = '0xd845a74344eaed52919ccfba40c36914fae6f177'
+let bUSDCAddress = '0x08aaff9faf3af4701b2ddca6d49c0557102ee5b7'
+let bBNBAddress = '0x395a5aa17537bdd56b607330125677c039cecfc9'
 
 // Used for all cERC20 contracts
 function getTokenPrice(
@@ -25,8 +25,11 @@ function getTokenPrice(
   underlyingAddress: Address,
   underlyingDecimals: i32,
 ): BigDecimal {
-  let comptroller = BirdCore.load('1')
-  let oracleAddress = comptroller.priceOracle as Address
+  let birdCore = BirdCore.load('1')
+  if (birdCore == null) {
+    return zeroBD
+  }
+  let oracleAddress = birdCore.priceOracle as Address
   let underlyingPrice: BigDecimal
 
   let oracle1 = PriceOracle.bind(oracleAddress)
@@ -37,10 +40,13 @@ function getTokenPrice(
   return underlyingPrice
 }
 
-// Returns the price of USDC in eth. i.e. 0.005 would mean ETH is $200
-function getUSDCpriceETH(blockNumber: i32): BigDecimal {
-  let comptroller = BirdCore.load('1')
-  let oracleAddress = comptroller.priceOracle as Address
+// Returns the price of USDC in eth. i.e. 0.005 would mean BNB is $200
+function getUSDCpriceBNB(blockNumber: i32): BigDecimal {
+  let birdCore = BirdCore.load('1')
+  if (birdCore == null) {
+    return zeroBD
+  }
+  let oracleAddress = birdCore.priceOracle as Address
   let usdPrice: BigDecimal
 
   // See notes on block number if statement in getTokenPrices()
@@ -59,7 +65,7 @@ export function createMarket(marketAddress: string): Market {
 
   if (contract !== null && contract.symbol() !== null && !contract.try_isBToken().reverted) {
     let marketToken = MarketToken.load(contract.symbol())
-    if (marketToken == null) {
+    if (marketToken == null && marketAddress !== '0x6d29e8f4d49dbc5729c3022931ff204037873c01') {
       marketToken = new MarketToken(contract.symbol())
       marketToken.address = Address.fromString(marketAddress)
       marketToken.save()
@@ -70,16 +76,16 @@ export function createMarket(marketAddress: string): Market {
     return null;
   }
 
-  // It is CETH, which has a slightly different interface
-  if (marketAddress == bETHAddress) {
+  // It is bBNB, which has a slightly different interface
+  if (marketAddress == bBNBAddress) {
     market = new Market(marketAddress)
     market.underlyingAddress = Address.fromString(
       '0x0000000000000000000000000000000000000000',
     )
     market.underlyingDecimals = 18
     market.underlyingPrice = BigDecimal.fromString('1')
-    market.underlyingName = 'Ether'
-    market.underlyingSymbol = 'ETH'
+    market.underlyingName = 'BNB'
+    market.underlyingSymbol = 'BNB'
     market.underlyingPriceUSD = zeroBD
     // It is all other BERC20 contracts
   } else {
@@ -155,10 +161,10 @@ export function updateMarket(
 
     let contractAddress = Address.fromString(market.id)
     let contract = BToken.bind(contractAddress)
-    let usdPriceInEth = getUSDCpriceETH(blockNumber)
+    let usdPriceInEth = getUSDCpriceBNB(blockNumber)
 
-    // if bETH, we only update USD price
-    if (market.id == bETHAddress) {
+    // if bBNB, we only update USD price
+    if (market.id == bBNBAddress) {
       let tokenPriceEth = getTokenPrice(
         blockNumber,
         contractAddress,
@@ -180,7 +186,7 @@ export function updateMarket(
 
       market.underlyingPrice = tokenPriceEth.truncate(mantissaFactor - market.underlyingDecimals + mantissaFactor)
       market.underlyingPriceUSD = market.underlyingPrice;
-      // if USDC, we only update ETH price
+      // if USDC, we only update BNB price
       // if (market.id != bUSDCAddress) {
       //   market.underlyingPriceUSD = market.underlyingPrice
       //     .div(usdPriceInEth)

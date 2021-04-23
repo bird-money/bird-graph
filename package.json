@@ -4,13 +4,16 @@
   "scripts": {
     "create": "graph create birdcarer/bird --node https://api.thegraph.com/deploy/",
     "create-local": "graph create birdcarer/bird --node http://127.0.0.1:8020",
+    "create-server": "graph create birdcarer/bird --node http://18.222.122.214:8020",
     "codegen": "graph codegen",
     "build": "graph build",
     "auth": "graph auth https://api.thegraph.com/deploy/ <ACCESS_TOKEN>",
     "prepare:mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
     "prepare:kovan": "mustache config/kovan.json subgraph.template.yaml > subgraph.yaml",
+    "prepare:bsc-testnet": "mustache config/testnet.json subgraph.template.yaml > subgraph.yaml",
     "deploy": "graph deploy birdcarer/bird --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-local": "graph deploy birdcarer/bird --ipfs http://localhost:5001 --node http://127.0.0.1:8020"
+    "deploy-local": "graph deploy birdcarer/bird --ipfs http://localhost:5001 --node http://127.0.0.1:8020",
+    "deploy-server": "graph deploy birdcarer/bird --ipfs http://18.222.122.214:5001 --node http://18.222.122.214:8020"
   },
   "devDependencies": {
     "@graphprotocol/graph-cli": "^0.18.0",

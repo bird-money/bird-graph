@@ -45,7 +45,7 @@ type Market @entity {
     #Fields that match birdCore API
     "Yearly borrow rate. With 2102400 blocks per year"
     borrowRate: BigDecimal!
-    "The bToken contract balance of ERC20 or ETH"
+    "The bToken contract balance of ERC20 or BNB"
     cash: BigDecimal!
     "Collateral factor determining how much one can borrow"
     collateralFactor: BigDecimal!
@@ -75,7 +75,7 @@ type Market @entity {
     underlyingAddress: Bytes!
     "Underlying token name"
     underlyingName: String!
-    "Underlying price of token in ETH (ex. 0.007 DAI)"
+    "Underlying price of token in BNB (ex. 0.007 DAI)"
     underlyingPrice: BigDecimal!
     "Underlying token symbol"
     underlyingSymbol: String!
@@ -99,10 +99,10 @@ type Market @entity {
 }
 
 """
-Account is an ETH address, with a list of all bToken markets the account has participated in, along with liquidation information.
+Account is an BNB address, with a list of all bToken markets the account has participated in, along with liquidation information.
 """
 type Account @entity {
-    "User ETH address"
+    "User BNB address"
     id: ID!
     "Array of BTokens user is in"
     tokens: [AccountBToken!]! @derivedFrom(field: "account")
