@@ -10,7 +10,7 @@ dataSources:
     source:
       address: '{{birdCoreAddress}}'
       abi: BirdCore
-      startBlock: 8226882
+      startBlock: 9175566
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -53,7 +53,7 @@ dataSources:
     network: {{network}}
     source:
       abi: BToken
-      startBlock: 8226882
+      startBlock: 9175566
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -94,7 +94,7 @@ dataSources:
     network: {{network}}
     source:
       abi: ERC20
-      startBlock: 8226882
+      startBlock: 9175566
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -118,7 +118,7 @@ dataSources:
     source:
       address: '{{birdPlusAddress}}'
       abi: BirdPlus
-      startBlock: 8226882
+      startBlock: 9175566
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -138,7 +138,7 @@ dataSources:
     source:
       address: '{{priceOracleAddress}}'
       abi: SimplePriceOracle
-      startBlock: 8226882
+      startBlock: 9175566
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

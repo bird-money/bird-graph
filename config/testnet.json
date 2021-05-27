@@ -1,6 +1,6 @@
 {
     "network": "testnet",
-    "birdCoreAddress": "0x7F7696BD1C21f4cbcb7B3d3f7438ED3E242c2C4a",
-    "birdPlusAddress": "0x8966f56ac5c793A227CBf552E3df2642483058a0",
-    "priceOracleAddress": "0x21B5878aff9c2A67d81e7bFC26a6E72B1E848F67"
+    "birdCoreAddress": "0x23249E7026A8EA43ed88f4581647187c029C6c2f",
+    "birdPlusAddress": "0x73F96c6Cf07bd820522aCA87845678060fc86923",
+    "priceOracleAddress": "0xEC3583c18339A841eb5faa3F028Df2920b797F44"
 }
