@@ -1,0 +1,6 @@
+{
+    "network": "bsc",
+    "birdCoreAddress": "0x2c79f0e791dAEA7d541BdeC681Acb2FEa6431741",
+    "birdPlusAddress": "0x0A6bE79c3e47ce4fFC369Bd3ca1CBEAE84bf878f",
+    "priceOracleAddress": "0x1b9Df1E29fb86ea8283Adcd142F7600736485c25"
+}
