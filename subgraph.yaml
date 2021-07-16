@@ -136,11 +136,7 @@ dataSources:
     name: SimplePriceOracle
     network: mainnet
     source:
-<<<<<<< HEAD
-      address: '0x624128c9f71dc9ca6876f2f75d6e8f64899209d7'
-=======
       address: '0x624128c9f71Dc9Ca6876F2F75d6e8F64899209D7'
->>>>>>> 026afd305f530a82999e3a2a4209fd715964e488
       abi: SimplePriceOracle
       startBlock: 12030984
     mapping:
