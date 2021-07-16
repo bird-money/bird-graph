@@ -2,5 +2,5 @@
   "network": "mainnet",
   "birdCoreAddress": "0x980D11Ac1C26F737CA467BeC2c0ed292d06a258C",
   "birdPlusAddress": "0xbced0066a6a3b7c633cbd8da0d53b6dcd9e0c352",
-  "priceOracleAddress": "0x30604D4A92cC0066FCF3497a163941018A9a7e62"
+  "priceOracleAddress": "0x624128c9f71dc9ca6876f2f75d6e8f64899209d7"
 }
